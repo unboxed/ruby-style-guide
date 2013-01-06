@@ -55,6 +55,16 @@ mind for now.
 You can generate a PDF or an HTML copy of this guide using
 [Transmuter](https://github.com/TechnoGate/transmuter).
 
+The [rubocop](https://github.com/bbatsov/rubocop) project aims to
+provide an automated way to check whether a Ruby code base complies
+with the style guide. Currently it's far from being production ready and it's missing
+lots of features. Everyone is naturally invited to help improve it!
+
+Translations of the guide are available in the following languages:
+
+* [Chinese Simplified](https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhCN.md)
+* [Chinese Traditional](https://github.com/JuanitoFatas/ruby-style-guide/blob/master/README-zhTW.md)
+
 ## Table of Contents
 
 * [Source Code Layout](#source-code-layout)
@@ -79,7 +89,7 @@ You can generate a PDF or an HTML copy of this guide using
 > -- Jerry Coffin (on indentation)
 
 * Use `UTF-8` as the source file encoding.
-* Use two **spaces** per indentation level.
+* Use two **spaces** per indentation level. No hard tabs.
 
     ```Ruby
     # good
@@ -99,7 +109,7 @@ You can generate a PDF or an HTML copy of this guide using
     configuration setting to protect your project from Windows line
     endings creeping in:
 
-        ```$ git config --global core.autocrlf true```
+        $ git config --global core.autocrlf true
 
 * Use spaces around operators, after commas, colons and semicolons, around `{`
   and before `}`. Whitespace might be (mostly) irrelevant to the Ruby
@@ -131,7 +141,7 @@ You can generate a PDF or an HTML copy of this guide using
     ```
 
 * Indent `when` as deep as `case`. I know that many would disagree
-  with this one, but it's the style established in both the "The Ruby
+  with this one, but it's the style established in both "The Ruby
   Programming Language" and "Programming Ruby".
 
     ```Ruby
@@ -173,7 +183,7 @@ You can generate a PDF or an HTML copy of this guide using
     end
     ```
 
-* Align the parameters of a method call if they span over multiple lines.
+* Align the parameters of a method call if they span more than one line.
 
     ```Ruby
     # starting point (line is too long)
@@ -208,9 +218,19 @@ You can generate a PDF or an HTML copy of this guide using
     end
     ```
 
+* Add underscores to large numeric literals to improve their readability.
+
+    ```Ruby
+    # bad - how many 0s are there?
+    num = 1000000
+
+    # good - much easier to parse for the human brain
+    num = 1_000_000
+    ```
+
 * Use RDoc and its conventions for API documentation.  Don't put an
   empty line between the comment block and the `def`.
-* Keep lines fewer than 80 characters.
+* Limit lines to 80 characters.
 * Avoid trailing whitespace.
 
 ## Syntax
@@ -319,7 +339,7 @@ You can generate a PDF or an HTML copy of this guide using
     document.saved? or document.save!
     ```
 
-* Avoid multi-line `?:` (the ternary operator), use `if/unless` instead.
+* Avoid multi-line `?:` (the ternary operator); use `if/unless` instead.
 
 * Favor modifier `if/unless` usage when you have a single-line
   body. Another good alternative is the usage of control flow `and/or`.
@@ -414,7 +434,7 @@ You can generate a PDF or an HTML copy of this guide using
     ```
 
 * Omit parentheses around parameters for methods that are part of an
-  internal DSL (e.g. Rake, Rails, RSpec), methods that are with
+  internal DSL (e.g. Rake, Rails, RSpec), methods that have
   "keyword" status in Ruby (e.g. `attr_reader`, `puts`) and attribute
   access methods. Use parentheses around the arguments of all other
   method invocations.
@@ -462,10 +482,10 @@ You can generate a PDF or an HTML copy of this guide using
     ```
 
     Some will argue that multiline chaining would look OK with the use of {...}, but they should
-    ask themselves - it this code really readable and can't the blocks contents be extracted into
-    nifty methods.
+    ask themselves - is this code really readable and can the blocks' contents be extracted into
+    nifty methods?
 
-* Avoid `return` where not required.
+* Avoid `return` where not required for flow of control.
 
     ```Ruby
     # bad
@@ -479,7 +499,7 @@ You can generate a PDF or an HTML copy of this guide using
     end
     ```
 
-* Avoid `self` where not required.
+* Avoid `self` where not required. (It is only required when calling a self write accessor.)
 
     ```Ruby
     # bad
@@ -501,7 +521,7 @@ You can generate a PDF or an HTML copy of this guide using
     end
     ```
 
-* As a corollary, avoid shadowing methods with local variables unless they are both equivalent
+* As a corollary, avoid shadowing methods with local variables unless they are both equivalent.
 
     ```Ruby
     class Foo
@@ -527,6 +547,7 @@ You can generate a PDF or an HTML copy of this guide using
         end
       end
     end
+    ```
 
 * Use spaces around the `=` operator when assigning default values to method parameters:
 
@@ -559,7 +580,7 @@ You can generate a PDF or an HTML copy of this guide using
     ```
 
 * Using the return value of `=` (an assignment) is ok, but surround the
-  assignment with parenthesis.
+  assignment with parentheses.
 
     ```Ruby
     # good - shows intended use of assignment
@@ -611,8 +632,7 @@ would happen if the current value happened to be `false`.)
 * Always run the Ruby interpreter with the `-w` option so it will warn
 you if you forget either of the rules above!
 
-* When the keys of your hash are symbols use the Ruby 1.9 hash literal
-syntax.
+* The new hash literal syntax is preferred in Ruby 1.9 when your hash keys are symbols.
 
     ```Ruby
     # bad
@@ -622,7 +642,7 @@ syntax.
     hash = { one: 1, two: 2 }
     ```
 
-* Use the new lambda literal syntax.
+* The new lambda literal syntax is preferred in Ruby 1.9.
 
     ```Ruby
     # bad
@@ -722,6 +742,16 @@ syntax.
   Smalltalk and are not common in other programming languages. The
   reason the use of `select` is encouraged over `find_all` is that it
   goes together nicely with `reject` and its name is pretty self-explanatory.
+  
+* Use `flat_map` instead of `map` + `flatten`.
+
+    ```Ruby
+    # bad
+    all_songs = users.map(&:songs).flatten.uniq
+
+    # good
+    all_songs = users.flat_map(&:songs).uniq
+    ```
 
 ## Comments
 
@@ -941,7 +971,10 @@ in accordance with their intended usage. Don't go off leaving
 everything `public` (which is the default). After all we're coding
 in *Ruby* now, not in *Python*.
 * Indent the `public`, `protected`, and `private` methods as much the
-  method definitions they apply to. Leave one blank line above them.
+  method definitions they apply to. Leave one blank line above the
+  visibility modifier
+  and one blank line below in order to emphasize that it applies to all
+  methods below it.
 
     ```Ruby
     class SomeClass
@@ -950,13 +983,19 @@ in *Ruby* now, not in *Python*.
       end
 
       private
+
       def private_method
         # ...
       end
+  
+      def another_private_method
+        # ...
+      end
     end
+    ```
 
-* Use `def self.method` to define singleton methods. This makes the methods
-  more resistant to refactoring changes.
+* Use `def self.method` to define singleton methods. This makes the code
+  easier to refactor since the class name is not repeated.
 
     ```Ruby
     class TestClass
@@ -987,7 +1026,7 @@ in *Ruby* now, not in *Python*.
 ## Exceptions
 
 * Signal exceptions using the `fail` keyword. Use `raise` only when
-  catching an exception and re-raising it (because here you're not failing, but explicitly and purposefully raising an exception).
+  catching an exception and re-raising it (because here you're not failing, but explicitly and intentionally raising an exception).
 
     ```Ruby
     begin
@@ -1013,7 +1052,7 @@ in *Ruby* now, not in *Python*.
     end
     ```
 
-* Use *implicit begin blocks* when possible.
+* Use *implicit begin blocks* where possible.
 
     ```Ruby
     # bad
@@ -1033,7 +1072,7 @@ in *Ruby* now, not in *Python*.
     end
     ```
 
-* Mitigate the proliferation of `begin` blocks via the use of
+* Mitigate the proliferation of `begin` blocks by using
   *contingency methods* (a term coined by Avdi Grimm).
 
     ```Ruby
@@ -1053,7 +1092,7 @@ in *Ruby* now, not in *Python*.
     # good
     def with_io_error_handling
        yield
-    rescue
+    rescue IOError
       # handle IOError
     end
 
@@ -1075,6 +1114,14 @@ in *Ruby* now, not in *Python*.
     # bad
     do_something rescue nil
     ```
+    
+* Avoid using `rescue` in its modifier form.    
+
+    ```Ruby
+    # bad - this catches all StandardError exceptions
+    do_something rescue nil
+    ```
+
 
 * Don't use exceptions for flow of control.
 
@@ -1202,7 +1249,7 @@ strings.
   implements a collection of unordered values with no duplicates. This
   is a hybrid of `Array`'s intuitive inter-operation facilities and
   `Hash`'s fast lookup.
-* Use symbols instead of strings as hash keys.
+* Prefer symbols instead of strings as hash keys.
 
     ```Ruby
     # bad
@@ -1212,9 +1259,8 @@ strings.
     hash = { one: 1, two: 2, three: 3 }
     ```
 
-* Avoid the use of mutable object as hash keys.
-* Use the new 1.9 literal hash syntax in preference to the hashrocket
-syntax.
+* Avoid the use of mutable objects as hash keys.
+* The new hash literal syntax is preferred in Ruby 1.9 when your hash keys are symbols.
 
     ```Ruby
     # bad
@@ -1224,7 +1270,19 @@ syntax.
     hash = { one: 1, two: 2, three: 3 }
     ```
 
-* Rely on the fact that hashes in 1.9 are ordered.
+* Use `fetch` when dealing with hash keys that should be present.
+
+    ```Ruby
+    heroes = { batman: 'Bruce Wayne', superman: 'Clark Kent' }
+    # bad - if we make a mistake we might not spot it right away
+    heroes[:batman] # => "Bruce Wayne"
+    heroes[:supermann] # => nil
+    
+    # good - fetch raises a KeyError making the problem obvious
+    heroes.fetch(:supermann)
+    ```
+
+* Rely on the fact that hashes in Ruby 1.9 are ordered.
 * Never modify a collection while traversing it.
 
 ## Strings
@@ -1307,7 +1365,7 @@ syntax.
     string[/text (grp)/, 1] = 'replace'  # string => 'text replace'
     ```
 
-* Use non capturing groups when you don't use captured result of parenthesis.
+* Use non-capturing groups when you don't use captured result of parentheses.
 
     ```Ruby
     /(first|second)/   # bad
@@ -1329,7 +1387,7 @@ syntax.
     process meaningful_var
     ```
 
-* Character classes have only few special characters you should care about:
+* Character classes have only a few special characters you should care about:
   `^`, `-`, `\`, `]`, so don't escape `.` or brackets in `[]`.
 
 * Be careful with `^` and `$` as they match start/end of line, not string endings.
@@ -1405,8 +1463,10 @@ syntax.
 
 ## Metaprogramming
 
-* Do not mess around in core classes when writing libraries. (Do not monkey
-patch them.)
+* Avoid needless metaprogramming.
+
+* Do not mess around in core classes when writing libraries.
+  (Do not monkey-patch them.)
 
 * The block form of `class_eval` is preferable to the string-interpolated form.
   - when you use the string-interpolated form, always supply `__FILE__` and `__LINE__`, so that your backtraces make sense:
@@ -1417,7 +1477,7 @@ patch them.)
 
   - `define_method` is preferable to `class_eval{ def ... }`
 
-* When using `class_eval` (or other `eval`) with string interpolation, add a comment block showing its appearance if interpolated (a practice I learned from the rails code):
+* When using `class_eval` (or other `eval`) with string interpolation, add a comment block showing its appearance if interpolated (a practice I learned from the Rails code):
 
     ```ruby
     # from activesupport/lib/active_support/core_ext/string/output_safety.rb
@@ -1472,7 +1532,8 @@ patch them.)
 * Avoid methods longer than 10 LOC (lines of code). Ideally, most methods will be shorter than
   5 LOC. Empty lines do not contribute to the relevant LOC.
 * Avoid parameter lists longer than three or four parameters.
-* If you really have to, add "global" methods to Kernel and make them private.
+* If you really need "global" methods, add them to Kernel
+  and make them private.
 * Use class instance variables instead of global variables.
 
     ```Ruby
@@ -1493,7 +1554,6 @@ patch them.)
 * Use `OptionParser` for parsing complex command line options and
 `ruby -s` for trivial command line options.
 * Code in a functional way, avoiding mutation when that makes sense.
-* Avoid needless metaprogramming.
 * Do not mutate arguments unless that is the purpose of the method.
 * Avoid more than three levels of block nesting.
 * Be consistent. In an ideal world, be consistent with these guidelines.
